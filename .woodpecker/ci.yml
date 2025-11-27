@@ -12,7 +12,7 @@ steps:
   lint:
     image: python:${PYTHON_VERSION}
     commands:
-      - pipx install uv
+      - pip install uv
       - uv sync
       - uv run task lint
       - uv run task mypy
@@ -20,6 +20,6 @@ steps:
   test-ubuntu:
     image: python:${PYTHON_VERSION}
     commands:
-      - pipx install uv
+      - pip install uv
       - uv sync
       - uv run task test
