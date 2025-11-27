@@ -1,0 +1,25 @@
+when:
+  event: [push, pull_request]
+  branch: main
+
+matrix:
+  PYTHON_VERSION:
+    - "3.12"
+    - "3.13"
+    - "3.14"
+
+steps:
+  lint:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pipx install uv
+      - uv sync
+      - uv run task lint
+      - uv run task mypy
+
+  test-ubuntu:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pipx install uv
+      - uv sync
+      - uv run task test
