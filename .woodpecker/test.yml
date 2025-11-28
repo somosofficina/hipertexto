@@ -1,0 +1,17 @@
+when:
+  event: [push, pull_request]
+  branch: main
+
+matrix:
+  PYTHON_VERSION:
+    - "3.12"
+    - "3.13"
+    - "3.14"
+
+steps:
+  test:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pip install uv --root-user-action=ignore
+      - uv sync --locked --no-editable --no-python-downloads --python python3
+      - uv run --no-python-downloads --python python3 task test
