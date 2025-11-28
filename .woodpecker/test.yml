@@ -9,13 +9,6 @@ matrix:
     - "3.14"
 
 steps:
-  lint:
-    image: ghcr.io/astral-sh/uv:python3.14-bookworm-slim
-    commands:
-      - uv sync --no-python-downloads --python python3
-      - uv run task lint
-      - uv run task mypy
-
   test:
     image: ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim
     commands:

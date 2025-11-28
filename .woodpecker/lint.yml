@@ -1,0 +1,12 @@
+when:
+  event: [push, pull_request]
+  branch: main
+
+steps:
+  lint:
+    image: ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+    commands:
+      - uv sync --no-python-downloads --python python3
+      - uv run task lint
+      - uv run task mypy
+
