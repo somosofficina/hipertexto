@@ -16,7 +16,7 @@ steps:
       - uv run task lint
       - uv run task mypy
 
-  test-ubuntu:
+  test:
     image: ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim
     commands:
       - uv sync --no-python-downloads
