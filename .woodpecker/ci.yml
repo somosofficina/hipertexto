@@ -10,16 +10,14 @@ matrix:
 
 steps:
   lint:
-    image: python:${PYTHON_VERSION}
+    image: ghcr.io/astral-sh/uv:latest
     commands:
-      - pip install uv
-      - uv sync
+      - uv sync --no-python-downloads
       - uv run task lint
       - uv run task mypy
 
   test-ubuntu:
-    image: python:${PYTHON_VERSION}
+    image: ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim
     commands:
-      - pip install uv
-      - uv sync
+      - uv sync --no-python-downloads
       - uv run task test
