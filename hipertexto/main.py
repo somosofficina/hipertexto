@@ -185,8 +185,8 @@ def build():
 
 
 @app.command()
-def serve(port: int = 8080):
-    """Run a http server from public folder"""
+def serve(port: int = 8000):
+    """Run a http server from public folder in local network"""
     try:
         os.chdir('public')
     except FileNotFoundError:
@@ -201,7 +201,7 @@ def serve(port: int = 8080):
         ('', port), http.server.SimpleHTTPRequestHandler
     ) as httpd:
         console.print(
-            f'Serving at [link=http://127.0.0.1:{port}]http://127.0.0.1:{port}[/link]',
+            f'Serving at [link=http://0.0.0.0:{port}]http://0.0.0.0:{port}[/link]',
             style=success,
         )
         try:
