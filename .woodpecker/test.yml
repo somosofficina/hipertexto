@@ -12,6 +12,6 @@ steps:
   test:
     image: python:${PYTHON_VERSION}
     commands:
-      - pip install uv
-      - uv sync --locked --frozen --no-editable --no-python-downloads --python python3
-      - uv run task test --no-python-downloads --python python3
+      - pip install uv --root-user-action=ignore
+      - uv sync --locked --no-editable --no-python-downloads --python python3
+      - uv run --no-python-downloads --python python3 task test

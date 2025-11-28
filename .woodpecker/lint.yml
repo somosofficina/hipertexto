@@ -6,7 +6,7 @@ steps:
   lint:
     image: python:latest
     commands:
-      - pip install uv
-      - uv sync --locked --frozen --no-editable --no-python-downloads --python python3
-      - uv run task lint --no-python-downloads --python python3
-      - uv run task mypy --no-python-downloads --python python3
+      - pip install uv --root-user-action=ignore
+      - uv sync --locked --no-editable --no-python-downloads --python python3
+      - uv run --no-python-downloads --python python3 task lint
+      - uv run --no-python-downloads --python python3 task mypy
