@@ -10,7 +10,8 @@ matrix:
 
 steps:
   test:
-    image: ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim
+    image: python:${PYTHON_VERSION}
     commands:
+      - pip install uv
       - uv sync --no-python-downloads --python python3
       - uv run task test

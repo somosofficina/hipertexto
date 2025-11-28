@@ -4,8 +4,9 @@ when:
 
 steps:
   lint:
-    image: ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+    image: python:latest
     commands:
+      - pip install uv
       - uv sync --no-python-downloads --python python3
       - uv run task lint
       - uv run task mypy
