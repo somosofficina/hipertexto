@@ -10,7 +10,7 @@ matrix:
 
 steps:
   lint:
-    image: ghcr.io/astral-sh/uv:latest
+    image: ghcr.io/astral-sh/uv:bookworm-slim
     commands:
       - uv sync --no-python-downloads
       - uv run task lint
