@@ -7,7 +7,6 @@ steps:
     image: python:latest
     commands:
       - pip install uv
-      - uv sync --no-python-downloads --python python3
-      - uv run task lint
-      - uv run task mypy
-
+      - uv sync --locked --frozen --no-editable --no-python-downloads --python python3
+      - uv run task lint --no-python-downloads --python python3
+      - uv run task mypy --no-python-downloads --python python3
