@@ -25,6 +25,7 @@ app = cyclopts.App(
     help='Use ht --help to see the available commands',
     version=__version__,
     console=console,
+    result_action='return_zero',
 )
 
 CURRENT_SCRIPT_PATH: Final[Path] = Path(__file__).resolve()
