@@ -13,6 +13,7 @@ from rich.console import Console
 from rich.text import Text
 
 from hipertexto import __version__
+from hipertexto.local_server import CleanURLHandler
 
 from .jinja_globals import rel_path
 from .process_md import process_markdown
@@ -202,9 +203,7 @@ def serve(port: int = 8000):
         )
         sys.exit(1)
 
-    with http.server.HTTPServer(
-        ('', port), http.server.SimpleHTTPRequestHandler
-    ) as httpd:
+    with http.server.HTTPServer(('', port), CleanURLHandler) as httpd:
         console.print(
             f'Serving at [link=http://0.0.0.0:{port}]http://0.0.0.0:{port}[/link]',
             style=success,
