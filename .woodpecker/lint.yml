@@ -1,0 +1,12 @@
+when:
+  event: [push, pull_request]
+  branch: main
+
+steps:
+  lint:
+    image: python:latest
+    commands:
+      - pip install uv --root-user-action=ignore
+      - uv sync --locked --no-editable --no-python-downloads --python python3
+      - uv run --no-python-downloads --python python3 task lint
+      - uv run --no-python-downloads --python python3 task mypy
