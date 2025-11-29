@@ -5,12 +5,14 @@ import shutil
 import sys
 import tomllib
 from pathlib import Path
+from threading import Thread
 from typing import Final
 
 import cyclopts
 from jinja2 import Environment, FileSystemLoader
 from rich.console import Console
 from rich.text import Text
+from watchfiles import watch
 
 from hipertexto import __version__
 
@@ -190,7 +192,7 @@ def build():
 
 
 @app.command()
-def serve(port: int = 8000):
+def serve(port: int = 8000, reload: bool = True):
     """Run a http server from public folder in local network"""
     try:
         os.chdir('public')
@@ -201,6 +203,22 @@ def serve(port: int = 8000):
             f'Run {hipertexto_build.markup} before running "ht serve" again'
         )
         sys.exit(1)
+
+    if reload:
+        def watch_and_rebuild():
+            os.chdir('..')
+            console.print('Watching for file changes...', style=success)
+            for changes in watch('content', 'templates', 'static', 'styles'):
+                console.print(
+                    f'Detected changes in {len(changes)} file(s), rebuilding...',
+                    style=warning,
+                )
+                build()
+                console.print('Rebuild complete!', style=success)
+            os.chdir('public')
+
+        watcher_thread = Thread(target=watch_and_rebuild, daemon=True)
+        watcher_thread.start()
 
     with http.server.HTTPServer(
         ('', port), http.server.SimpleHTTPRequestHandler
