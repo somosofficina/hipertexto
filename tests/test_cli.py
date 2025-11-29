@@ -113,6 +113,23 @@ def test_build_full_hipertexto_project_ok(
     assert 'Site built successfully' in capsys.readouterr().out
 
 
+def test_build_full_hipertexto_project_public_structure(
+    full_hipertexto_project, monkeypatch, capsys: pytest.CaptureFixture
+):
+    monkeypatch.chdir(full_hipertexto_project)
+    result = app('build')
+
+    public = Path('public')
+
+    assert not result
+    assert 'Site built successfully' in capsys.readouterr().out
+
+    assert (public / 'index.html').exists()
+    assert (public / 'inner').exists()
+    assert (public / 'inner/index.html').exists()
+    assert (public / 'inner/other.html').exists()
+
+
 def test_build_copies_static_and_styles_content_directly(
     full_hipertexto_project, monkeypatch
 ):
