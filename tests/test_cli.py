@@ -119,9 +119,9 @@ def test_build_copies_static_and_styles_content_directly(
     monkeypatch.chdir(full_hipertexto_project)
     app('build')
 
-    public = Path("public")
+    public = Path('public')
 
-    assert (public / "lighthouse.jpg").exists()
-    assert (public / "style.css").exists()
-    assert not (public / "static").exists()
-    assert not (public / "styles").exists()
+    assert (public / 'lighthouse.jpg').exists()
+    assert (public / 'style.css').exists()
+    assert not (public / 'static').exists()
+    assert not (public / 'styles').exists()
