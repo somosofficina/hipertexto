@@ -28,6 +28,10 @@ app = cyclopts.App(
     result_action='return_zero',
 )
 
+app.register_install_completion_command(
+    help='Install completion for the current shell'
+)
+
 CURRENT_SCRIPT_PATH: Final[Path] = Path(__file__).resolve()
 TEMPLATES_DIR: Final[Path] = CURRENT_SCRIPT_PATH.parent / 'templates'
 
