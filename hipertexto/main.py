@@ -1,9 +1,9 @@
-import http.server
 import locale
 import os
 import shutil
 import sys
 import tomllib
+from http.server import HTTPServer
 from pathlib import Path
 from typing import Final
 
@@ -203,7 +203,7 @@ def serve(port: int = 8000):
         )
         sys.exit(1)
 
-    with http.server.HTTPServer(('', port), CleanURLHandler) as httpd:
+    with HTTPServer(('', port), CleanURLHandler) as httpd:
         console.print(
             f'Serving at [link=http://0.0.0.0:{port}]http://0.0.0.0:{port}[/link]',
             style=success,
