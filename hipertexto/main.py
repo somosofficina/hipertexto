@@ -1,9 +1,9 @@
-import http.server
 import locale
 import os
 import shutil
 import sys
 import tomllib
+from http.server import HTTPServer
 from pathlib import Path
 from threading import Thread
 from typing import Final
@@ -15,6 +15,7 @@ from rich.text import Text
 from watchfiles import watch
 
 from hipertexto import __version__
+from hipertexto.local_server import CleanURLHandler
 
 from .jinja_globals import rel_path
 from .process_md import process_markdown
@@ -220,9 +221,7 @@ def serve(port: int = 8000, reload: bool = True):
         watcher_thread = Thread(target=watch_and_rebuild, daemon=True)
         watcher_thread.start()
 
-    with http.server.HTTPServer(
-        ('', port), http.server.SimpleHTTPRequestHandler
-    ) as httpd:
+    with HTTPServer(('', port), CleanURLHandler) as httpd:
         console.print(
             f'Serving at [link=http://0.0.0.0:{port}]http://0.0.0.0:{port}[/link]',
             style=success,
