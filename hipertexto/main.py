@@ -206,6 +206,7 @@ def serve(port: int = 8000, reload: bool = True):
         sys.exit(1)
 
     if reload:
+
         def watch_and_rebuild():
             os.chdir('..')
             console.print('Watching for file changes...', style=success)
