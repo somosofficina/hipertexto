@@ -192,6 +192,19 @@ def build():
         sys.exit(1)
 
 
+def watch_and_rebuild():
+    os.chdir('..')
+    console.print('Watching for file changes...', style=success)
+    for changes in watch('content', 'templates', 'static', 'styles'):
+        console.print(
+            f'Detected changes in {len(changes)} file(s), rebuilding...',
+            style=warning,
+        )
+        build()
+        console.print('Rebuild complete!', style=success)
+    os.chdir('public')
+
+
 @app.command()
 def serve(port: int = 8000, reload: bool = True):
     """Run a http server from public folder in local network"""
@@ -206,19 +219,6 @@ def serve(port: int = 8000, reload: bool = True):
         sys.exit(1)
 
     if reload:
-
-        def watch_and_rebuild():
-            os.chdir('..')
-            console.print('Watching for file changes...', style=success)
-            for changes in watch('content', 'templates', 'static', 'styles'):
-                console.print(
-                    f'Detected changes in {len(changes)} file(s), rebuilding...',
-                    style=warning,
-                )
-                build()
-                console.print('Rebuild complete!', style=success)
-            os.chdir('public')
-
         watcher_thread = Thread(target=watch_and_rebuild, daemon=True)
         watcher_thread.start()
 
