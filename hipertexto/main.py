@@ -193,16 +193,18 @@ def build():
 
 
 def watch_and_rebuild():
-    os.chdir('..')
     console.print('Watching for file changes...', style=success)
-    for changes in watch('content', 'templates', 'static', 'styles'):
+    for changes in watch(
+        '../content', '../templates', '../static', '../styles'
+    ):
         console.print(
             f'Detected changes in {len(changes)} file(s), rebuilding...',
             style=warning,
         )
+        os.chdir('..')  # change to project folder before build
         build()
+        os.chdir('public')  # go back to public folder so we keep serving
         console.print('Rebuild complete!', style=success)
-    os.chdir('public')
 
 
 @app.command()
