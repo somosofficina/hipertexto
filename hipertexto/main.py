@@ -1,4 +1,3 @@
-import locale
 import os
 import shutil
 import sys
@@ -55,16 +54,6 @@ def init(name: str):
     (project_dir / 'templates').mkdir()
     (project_dir / 'static').mkdir()
     (project_dir / 'styles').mkdir()
-
-    env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
-    template = env.get_template('config.toml.jinja2')
-    config = template.render(name=name)
-    with open(
-        project_dir / 'config.toml',
-        'w',
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        f.write(config)
 
     styled_name = Text(name, style=success)
     console.print(f'Project {styled_name.markup} created successfully')
