@@ -1,6 +1,7 @@
 import time
 from http import HTTPStatus
 from threading import Thread
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -40,3 +41,23 @@ def test_serve_no_reload_starts_http_server(
     response = httpx.get('http://localhost:8000/', timeout=2)
     assert response.status_code == HTTPStatus.OK
     assert 'html' in response.text.lower()
+
+
+def test_serve_no_reload_is_interrupted(
+    full_hipertexto_project, monkeypatch, capsys
+):
+    """Test that serve starts an HTTP server on the specified port"""
+    monkeypatch.chdir(full_hipertexto_project)
+    app('build')
+
+    with patch('hipertexto.main.HTTPServer') as mock_server:
+        mock_instance = MagicMock()
+        mock_server.return_value.__enter__.return_value = mock_instance
+        mock_instance.serve_forever.side_effect = KeyboardInterrupt
+
+        app('serve --no-reload')
+
+        mock_instance.shutdown.assert_called_once()
+
+        output = capsys.readouterr().out
+        assert 'Local server stopped' in output
