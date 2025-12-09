@@ -1,8 +1,6 @@
-import locale
 import os
 import shutil
 import sys
-import tomllib
 from http.server import HTTPServer
 from pathlib import Path
 from typing import Final
@@ -41,27 +39,6 @@ def sort_by_key(page_metadata, key='title'):
     return page_metadata[key]
 
 
-def validate_hipertexto_project():
-    # searching for config.toml
-    config_file = Path('.') / 'config.toml'
-
-    if not config_file.exists():
-        e_console.print('Not a hipertexto project', style='white on red')
-        sys.exit(1)
-
-    with config_file.open('rb') as f:
-        config_toml = tomllib.load(f)
-
-    # config file should have hipertexto table
-    hipertexto_table = config_toml.get('hipertexto')
-
-    if not hipertexto_table:
-        e_console.print(
-            'config.toml should have a hipertexto table', style=error
-        )
-        sys.exit(1)
-
-
 @app.command()
 def init(name: str):
     """Create a new project"""
@@ -78,16 +55,6 @@ def init(name: str):
     (project_dir / 'static').mkdir()
     (project_dir / 'styles').mkdir()
 
-    env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
-    template = env.get_template('config.toml.jinja2')
-    config = template.render(name=name)
-    with open(
-        project_dir / 'config.toml',
-        'w',
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        f.write(config)
-
     styled_name = Text(name, style=success)
     console.print(f'Project {styled_name.markup} created successfully')
 
@@ -95,8 +62,6 @@ def init(name: str):
 @app.command()
 def build():
     """Build your site to the public folder"""
-
-    validate_hipertexto_project()
 
     root_path = Path('.')
     directories = {
