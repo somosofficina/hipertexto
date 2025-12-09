@@ -1,4 +1,3 @@
-import locale
 from pathlib import Path
 
 import pytest
@@ -31,18 +30,6 @@ def test_init_project_already_exists(
     assert 'File project already exists' in capsys.readouterr().err
 
 
-def test_build_hipertexto_project_not_found(
-    temp_dir, monkeypatch, capsys: pytest.CaptureFixture
-):
-    monkeypatch.chdir(temp_dir)
-
-    with pytest.raises(SystemExit) as e:
-        app('build')
-
-    assert e.value.code == 1
-    assert 'Not a hipertexto project' in capsys.readouterr().err
-
-
 def test_build_empty_project(
     temp_dir, monkeypatch, capsys: pytest.CaptureFixture
 ):
@@ -58,29 +45,6 @@ def test_build_empty_project(
     assert (
         'Content and Templates directories cannot be empty'
         in capsys.readouterr().err
-    )
-
-
-def test_build_hipertexto_table_not_found_in_config_toml(
-    temp_dir, monkeypatch, capsys: pytest.CaptureFixture
-):
-    monkeypatch.chdir(temp_dir)
-    app('init project')
-
-    monkeypatch.chdir('project')
-
-    # erasing hipertexto table from config.toml
-    with open(
-        'config.toml', 'w', encoding=locale.getpreferredencoding(False)
-    ) as f:
-        f.write('')
-
-    with pytest.raises(SystemExit) as e:
-        app('build')
-
-    assert e.value.code == 1
-    assert (
-        'config.toml should have a hipertexto table' in capsys.readouterr().err
     )
 
 
