@@ -1,8 +1,10 @@
 from http.server import SimpleHTTPRequestHandler
 from pathlib import Path
+from typing import override
 
 
 class CleanURLHandler(SimpleHTTPRequestHandler):
+    @override
     def do_GET(self):
         if Path('.' + self.path).is_file():
             return super().do_GET()
