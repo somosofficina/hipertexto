@@ -42,7 +42,19 @@ def process_markdown(
         content_dir, public_dir, file, root_dir, page.content
     )
 
-    html = markdown(corrected_content)
+    html = markdown(
+        corrected_content,
+        extensions=[
+            'pymdownx.superfences',
+            'pymdownx.highlight',
+            'pymdownx.magiclink',
+        ],
+        extension_configs={
+            'pymdownx.highlight': {
+                'noclasses': True,
+            }
+        },
+    )
     template = get_template(jinja_env, page)
     output_dir = section_dir or public_dir
     context = {
