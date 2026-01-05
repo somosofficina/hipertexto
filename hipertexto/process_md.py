@@ -44,7 +44,11 @@ def process_markdown(
 
     html = markdown(
         corrected_content,
-        extensions=['pymdownx.superfences', 'pymdownx.highlight'],
+        extensions=[
+            'pymdownx.superfences',
+            'pymdownx.highlight',
+            'pymdownx.magiclink',
+        ],
         extension_configs={
             'pymdownx.highlight': {
                 'noclasses': True,
