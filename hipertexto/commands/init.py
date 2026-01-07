@@ -4,7 +4,6 @@ from pathlib import Path
 import cyclopts
 from rich.text import Text
 
-
 from hipertexto.console import console, e_console
 from hipertexto.styles import error, success
 
