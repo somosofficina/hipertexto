@@ -1,6 +1,6 @@
 +++
 title = 'Other'
-template = 'index.html'
+template = 'other.html'
 +++
 
 # Other page

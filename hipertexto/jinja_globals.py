@@ -13,7 +13,8 @@ def rel_path(
     if resource_type not in {'static', 'style'}:
         raise ValueError('resource_type must be either static or style')
 
-    levels_to_go_up = context['page']['depth']
+    key = 'section' if 'section' in context else 'page'
+    levels_to_go_up = context[key]['depth']
 
     relative_path_to_root = '../' * levels_to_go_up
 

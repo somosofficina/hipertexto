@@ -1,82 +1,87 @@
 import locale
-from pathlib import Path
 
 import frontmatter
-from jinja2 import Environment, TemplateNotFound
+from jinja2 import TemplateNotFound
 from markdown import markdown  # type: ignore
 
 from hipertexto.images import copy_images_and_update_path
 from hipertexto.utils import calculate_depth
 
 
-def validate_frontmatter(page, file):
-    if (
-        not page.metadata
-        or not page.metadata.get('template')
-        or not page.metadata.get('title')
-    ):
-        raise ValueError(f'Frontmatter of {file} malformed')
+def validate_frontmatter(page, file, required_keys):
+    if not page.metadata:
+        raise ValueError(f'Missing frontmatter of file {file}')
 
-
-def get_template(jinja_env, page):
-    try:
-        return jinja_env.get_template(page.metadata.get('template'))
-    except TemplateNotFound:
-        raise TemplateNotFound(
-            f'Template {page.metadata.get("template")} not found'
+    missing = [key for key in required_keys if key not in page.metadata]
+    if missing:
+        raise ValueError(
+            f'Frontmatter in {file} missing keys: {", ".join(missing)}'
         )
 
 
-def process_markdown(
-    file: Path,
-    jinja_env: Environment,
-    content_dir: Path,
-    public_dir: Path,
-    root_dir: Path,
-    section_dir: Path | None = None,
-    section_pages: list | None = None,
-):
+def get_template(env, page):
+    try:
+        return env.get_template(page.metadata['template'])
+    except TemplateNotFound:
+        raise TemplateNotFound(
+            f'Template {page.metadata["template"]} not found'
+        )
+
+
+def render_markdown(file, directories):
     page = frontmatter.load(file)
-    validate_frontmatter(page, file)
-    corrected_content = copy_images_and_update_path(
-        content_dir, public_dir, file, root_dir, page.content
+    corrected = copy_images_and_update_path(
+        directories['content'],
+        directories['public'],
+        file,
+        directories['root'],
+        page.content,
+    )
+    return page, markdown(corrected)
+
+
+def write_html(path, html):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        html,
+        encoding=locale.getpreferredencoding(False),
     )
 
-    html = markdown(
-        corrected_content,
-        extensions=[
-            'pymdownx.superfences',
-            'pymdownx.highlight',
-            'pymdownx.magiclink',
-        ],
-        extension_configs={
-            'pymdownx.highlight': {
-                'noclasses': True,
-            }
-        },
-    )
-    template = get_template(jinja_env, page)
-    output_dir = section_dir or public_dir
+
+def generate_section(file, env, directories, output, pages):
+    required_keys = ['title', 'template']
+    section, html = render_markdown(file, directories)
+    validate_frontmatter(section, file, required_keys)
+
+    context = {
+        **section.metadata,
+        'content': html,
+        'depth': calculate_depth(file, directories['root']),
+        'url': f'{output}/',
+        'pages': pages,
+    }
+
+    template = get_template(env, section)
+    rendered = template.render(section=context)
+    write_html(output / 'index.html', rendered)
+
+    return context
+
+
+def generate_page(file, env, directories, output):
+    required_keys = ['title', 'template']
+    page, html = render_markdown(file, directories)
+    validate_frontmatter(page, file, required_keys)
+
     context = {
         **page.metadata,
         'content': html,
-        'depth': calculate_depth(file, root_dir),
+        'depth': calculate_depth(file, directories['root']),
+        'url': file.stem,
     }
 
-    if file.stem == '_index':
-        context['url'] = f'{output_dir}/'
-        context['pages'] = section_pages
-        html_filename = 'index.html'
-    else:
-        context['url'] = file.stem
-        html_filename = f'{file.stem}.html'
-
-    rendered_html = template.render(page=context)
-    with open(
-        output_dir / html_filename,
-        'w',
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        f.write(rendered_html)
+    template = get_template(env, page)
+    rendered = template.render(page=context)
+    write_html(output / f'{file.stem}.html', rendered)
 
     return context

@@ -3,11 +3,11 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title> {{ page.title }} </title>
+		<title> {{ section.title }} </title>
 	</head>
 	<link rel="stylesheet" href="{{ rel_path('style.css', 'style') }}">
 	<body>
-		{{ page.content }}
+		{{ section.content }}
 
 		<p>Other image</p>
 		<img src="{{ rel_path('lighthouse.jpg', 'static') }}" alt="lighthouse">

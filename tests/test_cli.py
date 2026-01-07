@@ -42,10 +42,7 @@ def test_build_empty_project(
         app('build')
 
     assert e.value.code == 1
-    assert (
-        'Content and Templates directories cannot be empty'
-        in capsys.readouterr().err
-    )
+    assert 'Content cannot be empty' in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(
