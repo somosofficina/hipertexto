@@ -15,10 +15,16 @@ def temp_dir():
 
 
 @pytest.fixture
-def full_hipertexto_project(temp_dir):
-    # copy hipertexto project from assets to temp_dir
-    shutil.copytree(
-        'tests/assets/full_hipertexto_project', temp_dir, dirs_exist_ok=True
-    )
+def sample_project(temp_dir):
+    asset = 'tests/assets/sample_project'
+    shutil.copytree(asset, temp_dir, dirs_exist_ok=True)
+
+    return temp_dir
+
+
+@pytest.fixture
+def sample_project_with_public(temp_dir):
+    asset = 'tests/assets/sample_project_with_public'
+    shutil.copytree(asset, temp_dir, dirs_exist_ok=True)
 
     return temp_dir

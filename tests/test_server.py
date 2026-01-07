@@ -23,10 +23,10 @@ def test_serve_public_folder_not_found(temp_dir, monkeypatch, capsys):
 
 
 def test_serve_no_reload_starts_http_server(
-    full_hipertexto_project, monkeypatch
+    sample_project, monkeypatch
 ):
     """Test that serve starts an HTTP server on the specified port"""
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     app('build')
 
     def run_server():
@@ -44,10 +44,10 @@ def test_serve_no_reload_starts_http_server(
 
 
 def test_serve_no_reload_is_interrupted(
-    full_hipertexto_project, monkeypatch, capsys
+    sample_project, monkeypatch, capsys
 ):
     """Test that serve starts an HTTP server on the specified port"""
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     app('build')
 
     with patch('hipertexto.commands.serve.HTTPServer') as mock_server:
