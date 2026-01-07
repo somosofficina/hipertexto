@@ -3,18 +3,15 @@ import sys
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-from rich.console import Console
 from cyclopts import App
 
+from hipertexto.console import console, e_console
 from hipertexto.jinja_globals import rel_path
 from hipertexto.process_md import process_markdown
 from hipertexto.styles import error, success
 
 
 app = App()
-
-console = Console()
-e_console = Console(stderr=True)
 
 
 def sort_by_key(page_metadata, key='title'):

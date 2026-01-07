@@ -1,10 +1,8 @@
 import cyclopts
-from rich.console import Console
 
 from hipertexto import __version__
+from hipertexto.console import console
 from hipertexto.commands import build, init, serve
-
-console = Console()
 
 app = cyclopts.App(
     name='ht',

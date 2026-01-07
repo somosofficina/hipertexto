@@ -4,16 +4,13 @@ from http.server import HTTPServer
 from threading import Thread
 
 import cyclopts
-from rich.console import Console
 from rich.text import Text
 from watchfiles import watch
 
 from hipertexto.commands import build
+from hipertexto.console import console, e_console
 from hipertexto.local_server import CleanURLHandler
 from hipertexto.styles import error, success, warning
-
-console = Console()
-e_console = Console(stderr=True)
 
 app = cyclopts.App()
 

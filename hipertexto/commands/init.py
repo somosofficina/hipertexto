@@ -2,14 +2,11 @@ import sys
 from pathlib import Path
 
 import cyclopts
-from rich.console import Console
 from rich.text import Text
 
 
+from hipertexto.console import console, e_console
 from hipertexto.styles import error, success
-
-console = Console()
-e_console = Console(stderr=True)
 
 app = cyclopts.App()
 
