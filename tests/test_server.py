@@ -50,7 +50,7 @@ def test_serve_no_reload_is_interrupted(
     monkeypatch.chdir(full_hipertexto_project)
     app('build')
 
-    with patch('hipertexto.main.HTTPServer') as mock_server:
+    with patch('hipertexto.commands.serve.HTTPServer') as mock_server:
         mock_instance = MagicMock()
         mock_server.return_value.__enter__.return_value = mock_instance
         mock_instance.serve_forever.side_effect = KeyboardInterrupt
