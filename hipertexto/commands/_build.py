@@ -1,6 +1,8 @@
+
 import shutil
 import sys
 from pathlib import Path
+from typing import Any, Dict, List
 
 from cyclopts import App
 from jinja2 import Environment, FileSystemLoader
@@ -12,18 +14,18 @@ from hipertexto.styles import error, success
 app = App()
 
 
-def sort_by_key(page_metadata, key='title'):
+def sort_by_key(page_metadata: Dict[str, Any], key: str = 'title') -> Any:
     return page_metadata[key]
 
 
-def delete_and_recreate_path(path):
+def delete_and_recreate_path(path: Path) -> None:
     if path.exists():
         shutil.rmtree(path)
 
     path.mkdir()
 
 
-def ensure_not_empty(path, pathname):
+def ensure_not_empty(path: Path, pathname: str) -> None:
     """Check if a folder exists and it's not empty"""
     exists = path.exists()
     has_content = any(path.iterdir())
@@ -34,7 +36,7 @@ def ensure_not_empty(path, pathname):
         sys.exit(1)
 
 
-def move_folder_to_public(path, public):
+def move_folder_to_public(path: Path, public: Path) -> None:
     for item in path.iterdir():
         destination = public / item.name
         if item.is_dir():
@@ -43,14 +45,19 @@ def move_folder_to_public(path, public):
             shutil.copy2(item, destination)
 
 
-def process_entries(source, output, directories, env):
+def process_entries(
+    source: Path,
+    output: Path,
+    directories: Dict[str, Path],
+    env: Environment
+) -> None:
     """
     Recursively process content entries, including markdown files and
     directories.
     """
     output.mkdir(parents=True, exist_ok=True)
     index = source / '_index.md'
-    pages = []
+    pages: List[Dict[str, Any]] = []
 
     for entry in source.iterdir():
         if entry.is_dir():
@@ -69,7 +76,7 @@ def process_entries(source, output, directories, env):
 
 
 @app.command()
-def build():
+def build() -> None:
     """Build your site to the public folder"""
 
     root_path = Path('.')
