@@ -1,8 +1,7 @@
-
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from cyclopts import App
 from jinja2 import Environment, FileSystemLoader
@@ -14,7 +13,7 @@ from hipertexto.styles import error, success
 app = App()
 
 
-def sort_by_key(page_metadata: Dict[str, Any], key: str = 'title') -> Any:
+def sort_by_key(page_metadata: dict[str, Any], key: str = 'title') -> Any:
     return page_metadata[key]
 
 
@@ -46,10 +45,7 @@ def move_folder_to_public(path: Path, public: Path) -> None:
 
 
 def process_entries(
-    source: Path,
-    output: Path,
-    directories: Dict[str, Path],
-    env: Environment
+    source: Path, output: Path, directories: dict[str, Path], env: Environment
 ) -> None:
     """
     Recursively process content entries, including markdown files and
@@ -57,7 +53,7 @@ def process_entries(
     """
     output.mkdir(parents=True, exist_ok=True)
     index = source / '_index.md'
-    pages: List[Dict[str, Any]] = []
+    pages: list[dict[str, Any]] = []
 
     for entry in source.iterdir():
         if entry.is_dir():
@@ -65,7 +61,7 @@ def process_entries(
                 source=entry,
                 output=output / entry.name,
                 directories=directories,
-                env=env
+                env=env,
             )
         elif entry.suffix == '.md' and entry != index:
             pages.append(generate_page(entry, env, directories, output))
@@ -108,7 +104,7 @@ def build() -> None:
             source=directories['content'],
             output=directories['public'],
             env=env,
-            directories=directories
+            directories=directories,
         )
         console.print('Site built successfully', style=success)
     except Exception as exc:
