@@ -1,8 +1,8 @@
 import cyclopts
 
 from hipertexto import __version__
-from hipertexto.console import console
 from hipertexto.commands import build, init, serve
+from hipertexto.console import console
 
 app = cyclopts.App(
     name='ht',

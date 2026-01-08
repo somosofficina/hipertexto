@@ -2,14 +2,13 @@ import shutil
 import sys
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
 from cyclopts import App
+from jinja2 import Environment, FileSystemLoader
 
 from hipertexto.console import console, e_console
 from hipertexto.generators import generate_page, generate_section
 from hipertexto.jinja_globals import rel_path
 from hipertexto.styles import error, success
-
 
 app = App()
 
