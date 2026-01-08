@@ -44,7 +44,10 @@ def move_folder_to_public(path, public):
 
 
 def process_entries(source, output, directories, env):
-    """Recursive process content entries"""
+    """
+    Recursively process content entries, including markdown files and
+    directories.
+    """
     output.mkdir(parents=True, exist_ok=True)
     index = source / '_index.md'
     pages = []
