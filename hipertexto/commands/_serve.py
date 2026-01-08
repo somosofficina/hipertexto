@@ -1,7 +1,9 @@
 import os
 import sys
-from http.server import HTTPServer
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+from pathlib import Path
 from threading import Thread
+from typing import override
 
 import cyclopts
 from rich.text import Text
@@ -9,10 +11,23 @@ from watchfiles import watch
 
 from hipertexto.commands import build
 from hipertexto.console import console, e_console
-from hipertexto.local_server import CleanURLHandler
 from hipertexto.styles import error, success, warning
 
 app = cyclopts.App()
+
+
+class CleanURLHandler(SimpleHTTPRequestHandler):
+    @override
+    def do_GET(self):
+        if Path('.' + self.path).is_file():
+            return super().do_GET()
+
+        html_path = self.path.rstrip('/') + '.html'
+        if Path('.' + html_path).is_file():
+            self.path = html_path
+            return super().do_GET()
+
+        return super().do_GET()
 
 
 def watch_and_rebuild():
