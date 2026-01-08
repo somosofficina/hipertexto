@@ -7,7 +7,6 @@ from jinja2 import Environment, FileSystemLoader
 
 from hipertexto.console import console, e_console
 from hipertexto.generators import generate_page, generate_section
-from hipertexto.jinja_globals import rel_path
 from hipertexto.styles import error, success
 
 app = App()
@@ -93,7 +92,6 @@ def build():
 
     # load jinja environment
     env = Environment(loader=FileSystemLoader(directories['templates']))
-    env.globals['rel_path'] = rel_path
 
     try:
         process_entries(
