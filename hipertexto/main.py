@@ -1,26 +1,9 @@
-import os
-import shutil
-import sys
-from http.server import HTTPServer
-from pathlib import Path
-from threading import Thread
-from typing import Final
-
 import cyclopts
-from jinja2 import Environment, FileSystemLoader
-from rich.console import Console
-from rich.text import Text
-from watchfiles import watch
 
 from hipertexto import __version__
-from hipertexto.local_server import CleanURLHandler
+from hipertexto.commands import build, init, serve
+from hipertexto.console import console
 
-from .jinja_globals import rel_path
-from .process_md import process_markdown
-from .styles import error, success, warning
-
-console = Console()
-e_console = Console(stderr=True)
 app = cyclopts.App(
     name='ht',
     help='Use ht --help to see the available commands',
@@ -29,173 +12,10 @@ app = cyclopts.App(
     result_action='return_zero',
 )
 
+app.command(build)
+app.command(init)
+app.command(serve)
+
 app.register_install_completion_command(
     help='Install completion for the current shell'
 )
-
-CURRENT_SCRIPT_PATH: Final[Path] = Path(__file__).resolve()
-TEMPLATES_DIR: Final[Path] = CURRENT_SCRIPT_PATH.parent / 'templates'
-
-
-def sort_by_key(page_metadata, key='title'):
-    return page_metadata[key]
-
-
-@app.command()
-def init(name: str):
-    """Create a new project"""
-
-    project_dir = Path(name)
-    try:
-        project_dir.mkdir()
-    except FileExistsError as e:
-        e_console.print(f'File {e.filename} already exists', style=error)
-        sys.exit(1)
-
-    (project_dir / 'content').mkdir()
-    (project_dir / 'templates').mkdir()
-    (project_dir / 'static').mkdir()
-    (project_dir / 'styles').mkdir()
-
-    styled_name = Text(name, style=success)
-    console.print(f'Project {styled_name.markup} created successfully')
-
-
-@app.command()
-def build():
-    """Build your site to the public folder"""
-
-    root_path = Path('.')
-    directories = {
-        'root': root_path,
-        'contents': root_path / 'content',
-        'styles': root_path / 'styles',
-        'static': root_path / 'static',
-        'templates': root_path / 'templates',
-        'public': Path('public'),
-    }
-
-    directories['public'].mkdir(exist_ok=True)
-
-    # content and templates must exist and not be empty
-    content_is_empty = not directories['contents'].exists() or not any(
-        directories['contents'].iterdir()
-    )
-    template_is_empty = not directories['templates'].exists() or not any(
-        directories['templates'].iterdir()
-    )
-    if content_is_empty or template_is_empty:
-        e_console.print(
-            'Content and Templates directories cannot be empty',
-            style=error,
-        )
-        sys.exit(1)
-
-    # Styles and Static content should be on public
-    for dir_path in {
-        directories['styles'],
-        directories['static'],
-    }:
-        if not dir_path.is_dir():
-            continue
-
-        for item in dir_path.iterdir():
-            dest_path = directories['public'] / item.name
-            if item.is_dir():
-                shutil.copytree(item, dest_path, dirs_exist_ok=True)
-            else:
-                shutil.copy2(item, dest_path)
-
-    env = Environment(loader=FileSystemLoader(directories['templates']))
-    env.globals['rel_path'] = rel_path
-
-    try:
-        for item in directories['contents'].iterdir():
-            if item.is_dir():
-                index_file = item / '_index.md'
-                section_dir = directories['public'] / item.name
-                section_dir.mkdir(parents=True, exist_ok=True)
-                section_pages = []
-
-                for file in item.glob('*.md'):
-                    if file != index_file:
-                        page_context = process_markdown(
-                            file=file,
-                            jinja_env=env,
-                            content_dir=directories['contents'],
-                            public_dir=directories['public'],
-                            root_dir=directories['root'],
-                            section_dir=section_dir,
-                        )
-                        section_pages.append(page_context)
-
-                if index_file.exists():
-                    section_pages.sort(key=sort_by_key, reverse=True)
-                    process_markdown(
-                        file=index_file,
-                        jinja_env=env,
-                        content_dir=directories['contents'],
-                        public_dir=directories['public'],
-                        root_dir=directories['root'],
-                        section_dir=section_dir,
-                        section_pages=section_pages,
-                    )
-
-            elif item.suffix == '.md':
-                process_markdown(
-                    file=item,
-                    jinja_env=env,
-                    content_dir=directories['contents'],
-                    public_dir=directories['public'],
-                    root_dir=directories['root'],
-                )
-
-        console.print('Site built successfully', style=success)
-
-    except Exception as e:
-        e_console.print(f'Error: {e}', style=error)
-        sys.exit(1)
-
-
-def watch_and_rebuild():
-    console.print('Watching for file changes...', style=success)
-    for changes in watch(
-        '../content', '../templates', '../static', '../styles'
-    ):
-        console.print(
-            f'Detected changes in {len(changes)} file(s), rebuilding...',
-            style=warning,
-        )
-        os.chdir('..')  # change to project folder before build
-        build()
-        os.chdir('public')  # go back to public folder so we keep serving
-        console.print('Rebuild complete!', style=success)
-
-
-@app.command()
-def serve(port: int = 8000, reload: bool = True):
-    """Run a http server from public folder in local network"""
-    try:
-        os.chdir('public')
-    except FileNotFoundError:
-        e_console.print('public folder not found', style=error)
-        hipertexto_build = Text('ht build', style=success)
-        e_console.print(
-            f'Run {hipertexto_build.markup} before running "ht serve" again'
-        )
-        sys.exit(1)
-
-    if reload:
-        watcher_thread = Thread(target=watch_and_rebuild, daemon=True)
-        watcher_thread.start()
-
-    with HTTPServer(('', port), CleanURLHandler) as httpd:
-        console.print(
-            f'Serving at [link=http://0.0.0.0:{port}]http://0.0.0.0:{port}[/link]',
-            style=success,
-        )
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            httpd.shutdown()
-            console.print('\nLocal server stopped.', style=warning)

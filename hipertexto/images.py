@@ -20,7 +20,7 @@ def copy_images_and_update_path(
             continue
         img_file = (
             content_dir / str(img_path)
-            if md_parent == 'contents'
+            if md_parent == 'content'
             else md_parent / str(img_path)
         )
 

@@ -42,10 +42,7 @@ def test_build_empty_project(
         app('build')
 
     assert e.value.code == 1
-    assert (
-        'Content and Templates directories cannot be empty'
-        in capsys.readouterr().err
-    )
+    assert 'Content cannot be empty' in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(
@@ -67,20 +64,20 @@ def test_main(args, expected_output, capsys: pytest.CaptureFixture):
     assert expected_output in capsys.readouterr().out
 
 
-def test_build_full_hipertexto_project_ok(
-    full_hipertexto_project, monkeypatch, capsys: pytest.CaptureFixture
+def test_build_sample_project_ok(
+    sample_project, monkeypatch, capsys: pytest.CaptureFixture
 ):
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     result = app('build')
 
     assert not result
     assert 'Site built successfully' in capsys.readouterr().out
 
 
-def test_build_full_hipertexto_project_public_structure(
-    full_hipertexto_project, monkeypatch, capsys: pytest.CaptureFixture
+def test_build_sample_project_public_structure(
+    sample_project, monkeypatch, capsys: pytest.CaptureFixture
 ):
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     result = app('build')
 
     public = Path('public')
@@ -95,9 +92,9 @@ def test_build_full_hipertexto_project_public_structure(
 
 
 def test_build_copies_static_and_styles_content_directly(
-    full_hipertexto_project, monkeypatch
+    sample_project, monkeypatch
 ):
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     app('build')
 
     public = Path('public')

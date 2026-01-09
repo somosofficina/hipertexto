@@ -22,11 +22,9 @@ def test_serve_public_folder_not_found(temp_dir, monkeypatch, capsys):
     assert 'ht build' in stderr
 
 
-def test_serve_no_reload_starts_http_server(
-    full_hipertexto_project, monkeypatch
-):
+def test_serve_no_reload_starts_http_server(sample_project, monkeypatch):
     """Test that serve starts an HTTP server on the specified port"""
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     app('build')
 
     def run_server():
@@ -43,14 +41,12 @@ def test_serve_no_reload_starts_http_server(
     assert 'html' in response.text.lower()
 
 
-def test_serve_no_reload_is_interrupted(
-    full_hipertexto_project, monkeypatch, capsys
-):
+def test_serve_no_reload_is_interrupted(sample_project, monkeypatch, capsys):
     """Test that serve starts an HTTP server on the specified port"""
-    monkeypatch.chdir(full_hipertexto_project)
+    monkeypatch.chdir(sample_project)
     app('build')
 
-    with patch('hipertexto.main.HTTPServer') as mock_server:
+    with patch('hipertexto.commands._serve.HTTPServer') as mock_server:
         mock_instance = MagicMock()
         mock_server.return_value.__enter__.return_value = mock_instance
         mock_instance.serve_forever.side_effect = KeyboardInterrupt
