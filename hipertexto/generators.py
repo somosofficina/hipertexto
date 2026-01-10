@@ -37,7 +37,20 @@ def render_markdown(file, directories):
         directories['root'],
         page.content,
     )
-    return page, markdown(corrected)
+    html = markdown(
+        corrected,
+        extensions=[
+            'pymdownx.superfences',
+            'pymdownx.highlight',
+            'pymdownx.magiclink',
+        ],
+        extension_configs={
+            'pymdownx.highlight': {
+                'noclasses': True,
+            }
+        },
+    )
+    return page, html
 
 
 def write_html(path, html):
